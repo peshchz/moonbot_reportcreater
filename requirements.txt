@@ -1,0 +1,5 @@
+xlsxwriter==1.3.8
+django==2.2.24
+PyMySQL==1.0.2
+django_pandas==0.6.4
+pyTelegramBotAPI==3.7.7
