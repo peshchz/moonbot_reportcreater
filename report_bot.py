@@ -4,6 +4,7 @@ import sys
 import traceback
 from pprint import pprint as pp
 import requests
+import pathlib
 
 from data.report_bot_settings import TOKEN
 
@@ -115,8 +116,9 @@ class ReportCreater(ParceSettings):
     def __init__(self,bot,token):
         self.bot = bot
         self.token = token
-        self.path = '/home/strategy_reports/'
-        self.outcoming = '{}outcoming_files/'.format(self.path)
+        file_path = str(pathlib.Path(__file__).parent.resolve())
+        self.outcoming = f'{file_path}/tmp/'
+        createPath(self.outcoming)
         self.report_path = {}
         self.file_name = {}
 
@@ -198,15 +200,12 @@ class ReportCreater(ParceSettings):
             x = CreateXlsReport(df,r.len_agg,self.file_name[chat_id],paint_strat)
             x.writeXls()
             self.sendReport(chat_id)         
-        try:
-            pass
-        except:
-            bot.send_message(chat_id, 'Что-то пошло не так')
 
     def sendReport(self,chat_id):
         doc = open(self.file_name[chat_id], 'rb')
         bot.send_document(chat_id, doc)
-
+        doc.close()
+        os.remove(self.file_name[chat_id])           
 
 rep = ReportCreater(bot,TOKEN)
 
@@ -244,6 +243,11 @@ coins=BTC,ETH - список монет, которые попадут в отч
 например
 market=f;time_line=30;reports=strat;duration=2;strategy_names=AA1,AA2;coins=BTC
 выведутся данные за 30 и 29 день назад по стратегиям AA1,AA2. Только по BTC
+
+Некоторые отчеты могут формироваться более часа, в зависимости от объема данных.
+Для начала выбирайте небольшой duration, чтобы примерно представлять, сколько времени уйдет на сборку большего периода
+
+Группа для обсуждения https://t.me/moonbot_reports
 """)
 """
 market=f;time_line=5;reports=strat;metrics=1 - \
